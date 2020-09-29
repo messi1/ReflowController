@@ -1,4 +1,4 @@
-#include "SerialController.h"
+#include "SerialPortController.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -8,7 +8,7 @@
 
 constexpr int timerInterval = 5000;
 
-SerialController::SerialController(const QString& serialPortName, QObject* parent)
+SerialPortController::SerialPortController(const QString& serialPortName, QObject* parent)
     : QObject(parent), m_standardOutput(stdout)
 {
     qRegisterMetaType<QSerialPort::SerialPortError>();
@@ -29,14 +29,14 @@ SerialController::SerialController(const QString& serialPortName, QObject* paren
     assert("Name of the serial port is not available" && m_serialPort.portName().length() > 0);
 
     m_writeTimer.setSingleShot(true);
-    connect(&m_serialPort, &QSerialPort::bytesWritten, this, &SerialController::handleBytesWritten);
-    connect(&m_serialPort, &QSerialPort::readyRead, this, &SerialController::handleReadyRead);
-    connect(&m_serialPort, &QSerialPort::errorOccurred, this, &SerialController::handleError);
-    connect(&m_writeTimer, &QTimer::timeout, this, &SerialController::handleWriteTimeout);
-    connect(&m_readTimer, &QTimer::timeout, this, &SerialController::handleReadTimeout);
+    connect(&m_serialPort, &QSerialPort::bytesWritten, this, &SerialPortController::handleBytesWritten);
+    connect(&m_serialPort, &QSerialPort::readyRead, this, &SerialPortController::handleReadyRead);
+    connect(&m_serialPort, &QSerialPort::errorOccurred, this, &SerialPortController::handleError);
+    connect(&m_writeTimer, &QTimer::timeout, this, &SerialPortController::handleWriteTimeout);
+    connect(&m_readTimer, &QTimer::timeout, this, &SerialPortController::handleReadTimeout);
 }
 
-void SerialController::handleReadyRead()
+void SerialPortController::handleReadyRead()
 {
     m_readData.append(m_serialPort.readAll());
 
@@ -46,7 +46,7 @@ void SerialController::handleReadyRead()
     }
 }
 
-void SerialController::handleBytesWritten(qint64 bytes)
+void SerialPortController::handleBytesWritten(qint64 bytes)
 {
     m_bytesWritten += bytes;
     if (m_bytesWritten == m_writeData.size())
@@ -58,7 +58,7 @@ void SerialController::handleBytesWritten(qint64 bytes)
     }
 }
 
-void SerialController::handleWriteTimeout()
+void SerialPortController::handleWriteTimeout()
 {
     m_standardOutput << QObject::tr("Operation timed out for port %1, error: %2")
                             .arg(m_serialPort.portName())
@@ -67,7 +67,7 @@ void SerialController::handleWriteTimeout()
     QCoreApplication::exit(1);
 }
 
-void SerialController::handleReadTimeout()
+void SerialPortController::handleReadTimeout()
 {
     if (m_readData.isEmpty())
     {
@@ -86,7 +86,7 @@ void SerialController::handleReadTimeout()
     QCoreApplication::quit();
 }
 
-void SerialController::handleError(QSerialPort::SerialPortError serialPortError)
+void SerialPortController::handleError(QSerialPort::SerialPortError serialPortError)
 {
     if (serialPortError == QSerialPort::WriteError)
     {
@@ -109,7 +109,7 @@ void SerialController::handleError(QSerialPort::SerialPortError serialPortError)
     }
 }
 
-void SerialController::open()
+void SerialPortController::open()
 {
     // TODO: Set Baudrate before open the port.
     bool isSerialPortOpen = m_serialPort.open(QIODevice::ReadWrite);
@@ -121,7 +121,7 @@ void SerialController::open()
     //    m_readTimer.start(5000);
 }
 
-void SerialController::write(const QByteArray& writeData)
+void SerialPortController::write(const QByteArray& writeData)
 {
     if (m_serialPort.isOpen())
     {
@@ -150,7 +150,7 @@ void SerialController::write(const QByteArray& writeData)
     }
 }
 
-void SerialController::close()
+void SerialPortController::close()
 {
     if (m_serialPort.isOpen())
     {
@@ -158,7 +158,7 @@ void SerialController::close()
     }
 }
 
-QList<QSerialPortInfo> SerialController::availablePorts()
+QList<QSerialPortInfo> SerialPortController::availablePorts()
 {
     return QSerialPortInfo::availablePorts();
 }

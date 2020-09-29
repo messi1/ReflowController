@@ -4,7 +4,7 @@
 #include <QThread>
 #include <QTranslator>
 
-#include "ReflowController/SerialController.h"
+#include "ReflowController/SerialPortController.h"
 
 int main(int argc, char* argv[])
 {
@@ -16,10 +16,10 @@ int main(int argc, char* argv[])
 
     QThread* serialThread = new QThread;
     serialThread->setObjectName("serialThread");
-    SerialController* serialController = new SerialController("ttyUSB0");
+    SerialPortController* serialPortController = new class SerialPortController("ttyUSB0");
 
-    serialController->moveToThread(serialThread);
-    serialController->open();
+    serialPortController->moveToThread(serialThread);
+    serialPortController->open();
 
     serialThread->start();
     return QApplication::exec();

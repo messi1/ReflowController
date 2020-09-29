@@ -6,8 +6,10 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
     PRIVATE
-    SerialController.h
-    SerialController.cpp
+    SerialCommandHandler.h
+    SerialCommandHandler.cpp
+    SerialPortController.h
+    SerialPortController.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
