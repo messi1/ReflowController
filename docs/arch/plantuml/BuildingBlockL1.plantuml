@@ -1,0 +1,34 @@
+@startuml
+allowmixing 
+skinparam monochrome true
+skinparam componentStyle uml2
+top to bottom direction
+
+'left to right direction
+component Oven <<external>>
+component ReflowControllerHW <<external>>
+
+ReflowControllerHW - Oven: Temperature °C
+
+component ReflowController {
+  class SerialPortController
+  class SerialCommandHandler
+  class ReflowHandler
+  class DataModel
+  
+  port " " as serial
+
+  SerialPortController - serial
+  SerialPortController - SerialCommandHandler
+  SerialCommandHandler - ReflowHandler
+  ReflowHandler - Ui
+  ReflowHandler - DataModel
+  Ui - DataModel
+}
+actor :Operator: as op
+serial -u0)- ReflowControllerHW : Cmd send
+serial -(0- ReflowControllerHW: Data recv
+op - ReflowController
+
+
+@enduml
