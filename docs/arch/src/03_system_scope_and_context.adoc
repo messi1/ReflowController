@@ -1,24 +1,31 @@
 [[section-system-scope-and-context]]
 == System Scope and Context
+[plantuml, system-diagram, png]
+....
+@startuml
+skinparam monochrome true
+skinparam componentStyle uml2
+top to bottom direction
+'left to right direction
 
+node "Convection oven" as Oven{
 
-[role="arc42help"]
-****
-.Contents
-System scope and context - as the name suggests - delimits your system (i.e. your scope) from all its communication partners
-(neighboring systems and users, i.e. the context of your system). It thereby specifies the external interfaces.
+}
 
-If necessary, differentiate the business context (domain specific inputs and outputs) from the technical context (channels, protocols, hardware).
+node "Reflow Controller HW" as Ctrl{
+  Ctrl -- Oven: Temperatur
+} 
 
-.Motivation
-The domain interfaces and technical interfaces to communication partners are among your system's most critical aspects. Make sure that you completely understand them.
+node "Reflow App" as App{
+}
 
-.Form
-Various options:
+:Operator: -> App: Configure, Start/Stop
+:Operator: -> Ctrl: Start/Stop
+App -0)- Ctrl: Recv\nanswer
+App -(0- Ctrl: Send\ncmd
+@enduml
+....
 
-* Context diagrams
-* Lists of communication partners and their interfaces.
-****
 
 
 === Business Context
